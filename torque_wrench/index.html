@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>レンチで見るベクトル積：トルク T = r × F</title>
+<meta name="description" content="レンチでネジを回すときの「トルク」を、ベクトル積 r × F として 3D で動かして確かめる図。視点を回し、持つ位置と力の向きを変えられます。">
+
+<!-- ===== リンクカード（X / Facebook）=====
+     og:image は「https:// から始まる絶対 URL」でないと X・Facebook に画像が出ない。 -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="レンチで見るベクトル積：トルク T = r × F">
+<meta property="og:description" content="レンチでネジを回す「トルク」を 3D で動かして確かめる図。視点を回し、持つ位置と力の向きを変えられます。">
+<meta property="og:url" content="https://skill-vis.github.io/biomechanics/torque_wrench/">
+<meta property="og:image" content="https://skill-vis.github.io/biomechanics/torque_wrench/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #fff; color: #222;
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", Meiryo, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px 16px 32px; }
+  h1 { font-size: 1.6rem; color: #1e4d7b; margin: 0.2em 0 0.3em; line-height: 1.35; }
+  .lead { margin: 0 0 0.8em; color: #333; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 1.3rem; } }
+
+  #wrSvg { width: 100%; height: auto; display: block; cursor: grab; touch-action: none;
+           background: #fbfcfe; border: 1px solid #dde3ea; border-radius: 6px 6px 0 0; }
+  .controls { background: #e6ecf3; border: 2px solid #1e4d7b; border-top: none; border-radius: 0 0 6px 6px;
+              padding: 10px 14px; display: grid; gap: 8px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+  .row label { white-space: nowrap; font-weight: bold; min-width: 7.5em; }
+  .row input[type=range] { flex: 1; accent-color: #1e4d7b; height: 26px; }
+  .val { font-family: ui-monospace, Menlo, monospace; font-weight: bold; min-width: 3.4em; text-align: right; color: #1e4d7b; }
+  .btns { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .btn { padding: 5px 12px; border: 1px solid #1e4d7b; background: #fff; color: #1e4d7b;
+         font-size: 0.95rem; cursor: pointer; border-radius: 4px; }
+  .btn.active { background: #1e4d7b; color: #fff; }
+  .hint { font-size: 0.85rem; color: #777; margin: 6px 2px 0; }
+
+  .box { border-left: 5px solid #1e4d7b; background: #e8f0fa; padding: 8px 14px; margin: 0 0 10px; }
+  .box.green { border-color: #1e8449; background: #f1f8ee; }
+  .box p { margin: 0.2em 0; }
+  .r { color: #2471a3; } .f { color: #c0392b; } .t { color: #8e44ad; } .g { color: #1e8449; } .o { color: #e07b00; }
+  .v { font-family: "Times New Roman", serif; font-style: italic; font-weight: bold; }
+  .readout { font-family: ui-monospace, Menlo, monospace; font-size: 1.05rem; margin: 6px 0 10px; }
+  .readout b { font-size: 1.15em; }
+  .small { font-size: 0.88rem; color: #555; }
+  footer { margin-top: 18px; font-size: 0.8rem; color: #888; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p style="margin:0; font-size:0.85rem;"><a href="../" style="color:#1e4d7b;">← Biomechanics の図の一覧</a></p>
+  <h1>レンチで見るベクトル積：トルク <span class="v t">T</span> = <span class="v r">r</span> × <span class="v f">F</span></h1>
+  <p class="lead">レンチでネジを締めるときの「回す働き」は、2 つのベクトルの<b>ベクトル積（外積）</b>で表せます。
+    図をドラッグして視点を回し、スライダで<b>持つ位置</b>と<b>力の向き</b>を変えてみてください。</p>
+
+  <div class="grid">
+    <div>
+      <svg id="wrSvg" viewBox="0 0 660 600" role="img" aria-label="レンチとトルクのベクトルを示す 3D 図"
+           font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, sans-serif">
+        <defs>
+          <marker id="wrMb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2471a3"/></marker>
+          <marker id="wrMr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c0392b"/></marker>
+          <marker id="wrMp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#8e44ad"/></marker>
+          <marker id="wrMo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#e07b00"/></marker>
+        </defs>
+        <path id="wrBolt" fill="#b9bec4" fill-opacity="0.85" stroke="#6b7177" stroke-width="1.5"/>
+        <g id="wrThreads" fill="none" stroke="#6b7177" stroke-width="1.2"></g>
+        <polygon id="wrPlate" fill="#d9c7a7" fill-opacity="0.35" stroke="#b49a6e" stroke-width="1.2"/>
+        <image id="wrImg" href="wrench.png" width="956" height="698" preserveAspectRatio="none"/>
+        <polygon id="wrPara" fill="#1e8449" fill-opacity="0.22" stroke="#1e8449" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <polygon id="wrNut" fill="#222" stroke="#000" stroke-width="1"/>
+        <polyline id="wrRot" fill="none" stroke="#e07b00" stroke-width="5" marker-end="url(#wrMo)"/>
+        <line id="wrR" stroke="#2471a3" stroke-width="7" marker-end="url(#wrMb)"/>
+        <line id="wrF" stroke="#c0392b" stroke-width="7" marker-end="url(#wrMr)"/>
+        <polyline id="wrAng" fill="none" stroke="#555" stroke-width="2"/>
+        <line id="wrT" stroke="#8e44ad" stroke-width="8" marker-end="url(#wrMp)"/>
+        <circle id="wrO" r="5" fill="#8fd16f" stroke="#2c5e1a" stroke-width="1.5"/>
+        <!-- 真上から見たとき T は画面の奥向き: ⊗ で示す -->
+        <g id="wrTin" stroke="#8e44ad" stroke-width="3.5" fill="#fff" opacity="0">
+          <circle r="16"/><line x1="-10" y1="-10" x2="10" y2="10"/><line x1="-10" y1="10" x2="10" y2="-10"/>
+        </g>
+        <g font-size="24" font-weight="bold" stroke="#fff" stroke-width="5" paint-order="stroke">
+          <text id="wrLr" fill="#2471a3" font-style="italic">r</text>
+          <text id="wrLF" fill="#c0392b" font-style="italic">F</text>
+          <text id="wrLT" fill="#8e44ad">T = r × F</text>
+          <text id="wrLang" fill="#555" font-size="20" font-style="italic">θ</text>
+          <text id="wrLarea" fill="#1e8449" font-size="18">面積 = |r||F| sin θ</text>
+        </g>
+      </svg>
+      <div class="controls">
+        <div class="row"><label class="r" for="wrS">持つ位置 |r|</label>
+          <input id="wrS" type="range" min="0.35" max="1" step="0.01" value="1"><span class="val" id="wrSv">1.00</span></div>
+        <div class="row"><label class="f" for="wrTh">力の向き θ</label>
+          <input id="wrTh" type="range" min="10" max="170" step="1" value="90"><span class="val" id="wrThv">90°</span></div>
+        <div class="btns"><span>視点：</span>
+          <button class="btn active" id="wrV1">斜め上から</button>
+          <button class="btn" id="wrV2">真上から</button>
+          <button class="btn" id="wrV3">真横から</button></div>
+      </div>
+      <p class="hint">図をドラッグ（スマートフォンは指でなぞる）すると、視点を自由に回せます。</p>
+    </div>
+
+    <div>
+      <div class="box">
+        <p><span class="v r">r</span>：ネジの中心から<b>手で持つ点</b>までのベクトル</p>
+        <p><span class="v f">F</span>：手で加える<b>力</b></p>
+        <p><span class="v t">T</span> = <span class="v r">r</span> × <span class="v f">F</span>：<b>トルク</b>（ネジを回す働き）</p>
+      </div>
+      <div class="box">
+        <p><b>① 向き</b>：<span class="v r">r</span> から <span class="v f">F</span> の向きへ<b class="o">右ネジ</b>を回したとき、
+          ネジが進む向き。つまり<b>ボルトの軸の方向</b>（板にねじ込まれる向き）。</p>
+        <p class="small"><span class="v t">T</span> は <span class="v r">r</span> にも <span class="v f">F</span> にも直交します。「真横から」で確かめられます。</p>
+      </div>
+      <div class="box">
+        <p><b>② 大きさ</b>：|<span class="v t">T</span>| = |<span class="v r">r</span>||<span class="v f">F</span>| sin <i>θ</i>
+          ＝ <b class="g">緑の平行四辺形の面積</b> ＝ 回す効き目</p>
+      </div>
+      <p class="readout">
+        |r| = <b class="r" id="wrOutR">1.00</b>、θ = <b class="f" id="wrOutTh">90°</b><br>
+        |T| = |r||F| sin θ = <b class="t" id="wrOutT">1.00</b>
+        <span class="small">（|F| = 1 とした）</span>
+      </p>
+      <div class="box green">
+        <p><b>スライダで確かめる</b>：柄の<b>端</b>を持つ（|r| が大きい）ほど、柄に<b>直角</b>に押す（θ = 90°）ほど、
+          |T| が大きくなる ＝ 楽に回せる。</p>
+        <p class="small">θ を 0° に近づける（柄の方向に引く）と sin θ → 0 で、いくら力を入れても回りません。</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>図はすべてブラウザ上で描いています（外部サービス・通信なし）。</footer>
+</div>
+
+<script>
+// =====================================================================
+// レンチとトルク（3D）
+//  世界座標: ネジの中心を原点、レンチは水平面 z=0 に寝かせ、柄の方向を +x。
+//  長さの単位は「ネジの中心 → 柄の端の輪の中心」= 1。
+//  正射影（平行投影）なので、平面に置いた画像は SVG の matrix(...) で正確に貼れる。
+//  F は r から時計回り（上から見て）に θ 回した向き → T = r × F は −z（ボルトがねじ込まれる向き）。
+// =====================================================================
+(function () {
+  const svg = document.getElementById('wrSvg');
+  const $ = id => document.getElementById(id);
+  const VW = 660, VH = 600;
+  // wrench.png 上の点（px）: ネジの中心と、柄の端の輪の中心
+  const P0 = [85, 142], P1 = [880, 635];
+  const LEN = Math.hypot(P1[0] - P0[0], P1[1] - P0[1]);
+  const al = Math.atan2(P1[1] - P0[1], P1[0] - P0[0]);
+  const img2w = (u, v) => {
+    const a = u - P0[0], b = -(v - P0[1]);
+    return [( a * Math.cos(al) - b * Math.sin(al)) / LEN,
+            ( a * Math.sin(al) + b * Math.cos(al)) / LEN, 0];
+  };
+  const FD = 0.45, KT = 0.6;
+  const RB = 0.055, ZB = -0.6, ZP = -0.12;
+  let phi = -32 * Math.PI / 180, eps = 34 * Math.PI / 180;
+  let S = 300, OX = 200, OY = 220;
+
+  const proj = (p) => {
+    const xs = Math.cos(phi) * p[0] - Math.sin(phi) * p[1];
+    const h  = Math.sin(phi) * p[0] + Math.cos(phi) * p[1];
+    const ys = Math.cos(eps) * p[2] + Math.sin(eps) * h;
+    return [OX + S * xs, OY - S * ys];
+  };
+  const pts = arr => arr.map(p => proj(p).map(v => v.toFixed(1)).join(',')).join(' ');
+  const setL = (id, a, b) => { const e = $(id), A = proj(a), B = proj(b);
+    e.setAttribute('x1', A[0]); e.setAttribute('y1', A[1]); e.setAttribute('x2', B[0]); e.setAttribute('y2', B[1]); };
+  const setT = (id, p, dx, dy) => { const e = $(id), A = proj(p);
+    e.setAttribute('x', (A[0] + (dx || 0)).toFixed(1)); e.setAttribute('y', (A[1] + (dy || 0)).toFixed(1)); };
+
+  const IMG_CORNERS = [[0, 0], [956, 0], [956, 698], [0, 698]].map(c => img2w(c[0], c[1]));
+  const PLATE = [[-0.3, -0.62, ZP], [1.18, -0.62, ZP], [1.18, 0.3, ZP], [-0.3, 0.3, ZP]];
+
+  function fit() {
+    const key = IMG_CORNERS.concat([[0, 0, ZB - 0.05], [0, 0, -KT * 1.05], [1, -FD, 0], [0, 0, 0.1], [-0.25, 0.25, 0]]);
+    S = 1; OX = 0; OY = 0;
+    const q = key.map(proj);
+    const xs = q.map(p => p[0]), ys = q.map(p => p[1]);
+    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+    S = Math.min((VW - 110) / w, (VH - 80) / h);
+    OX = VW / 2 - S * (Math.max(...xs) + Math.min(...xs)) / 2;
+    OY = VH / 2 - S * (Math.max(...ys) + Math.min(...ys)) / 2;
+  }
+
+  function draw() {
+    const s = +$('wrS').value, thd = +$('wrTh').value, th = thd * Math.PI / 180;
+    const O = [0, 0, 0], R = [s, 0, 0];
+    const Fv = [FD * Math.cos(th), -FD * Math.sin(th), 0];
+    const RF = [R[0] + Fv[0], R[1] + Fv[1], 0];
+    const tmag = s * Math.sin(th);
+    const T = [0, 0, -KT * tmag];
+
+    $('wrPlate').setAttribute('points', pts(PLATE));
+    const c0 = proj([0, 0, 0]), c1 = proj([0, 0, ZB]);
+    const rx = S * RB, ry = Math.max(0.5, S * RB * Math.sin(eps));
+    $('wrBolt').setAttribute('d', `M ${c0[0] - rx} ${c0[1]} L ${c1[0] - rx} ${c1[1]}
+      A ${rx} ${ry} 0 0 0 ${c1[0] + rx} ${c1[1]} L ${c0[0] + rx} ${c0[1]} Z`);
+    let th3 = '';
+    for (let z = -0.08; z > ZB + 0.02; z -= 0.07) {
+      const c = proj([0, 0, z]);
+      th3 += `<path d="M ${c[0] - rx} ${c[1]} A ${rx} ${ry} 0 0 0 ${c[0] + rx} ${c[1]}"/>`;
+    }
+    $('wrThreads').innerHTML = th3;
+
+    const w0 = img2w(0, 0), wu = img2w(1, 0), wv = img2w(0, 1);
+    const p0 = proj(w0), pu = proj(wu), pv = proj(wv);
+    $('wrImg').setAttribute('transform',
+      `matrix(${pu[0] - p0[0]} ${pu[1] - p0[1]} ${pv[0] - p0[0]} ${pv[1] - p0[1]} ${p0[0]} ${p0[1]})`);
+
+    $('wrPara').setAttribute('points', pts([O, R, RF, Fv]));
+    const hex = [];
+    for (let k = 0; k < 6; k++) {
+      const t = (k * 60 + 7.6) * Math.PI / 180;
+      hex.push(img2w(P0[0] + 62 * Math.cos(t), P0[1] + 62 * Math.sin(t)));
+    }
+    $('wrNut').setAttribute('points', pts(hex));
+    const arc = [];
+    for (let t = 165; t >= -75; t -= 5) { const a = t * Math.PI / 180; arc.push([0.21 * Math.cos(a), 0.21 * Math.sin(a), 0.01]); }
+    $('wrRot').setAttribute('points', pts(arc));
+
+    setL('wrR', O, R);
+    setL('wrF', R, RF);
+    const ang = [];
+    for (let k = 0; k <= 20; k++) { const a = -th * k / 20; ang.push([s + 0.09 * Math.cos(a), 0.09 * Math.sin(a), 0]); }
+    $('wrAng').setAttribute('points', pts(ang));
+    setL('wrT', O, T);
+    const tO = proj(O), tE = proj(T), tLen = Math.hypot(tE[0] - tO[0], tE[1] - tO[1]);
+    $('wrT').setAttribute('opacity', tLen < 12 ? 0 : 1);
+    $('wrTin').setAttribute('opacity', (tLen < 12 && tmag > 0.02) ? 1 : 0);
+    $('wrTin').setAttribute('transform', `translate(${tO[0] - 24} ${tO[1] - 52})`);
+    $('wrO').setAttribute('cx', tO[0]); $('wrO').setAttribute('cy', tO[1]);
+
+    setT('wrLr', [s * 0.55, 0.07, 0], -6, -6);
+    setT('wrLF', RF, 10, 12);
+    setT('wrLT', T, 14, 4);
+    if (tLen < 12) setT('wrLT', O, -6, -44);
+    setT('wrLang', [s + 0.15 * Math.cos(-th / 2), 0.15 * Math.sin(-th / 2), 0], -5, 8);
+    setT('wrLarea', [(R[0] + Fv[0]) / 2, Fv[1] / 2, 0], 0, 6);
+    $('wrLarea').setAttribute('text-anchor', 'middle');
+    $('wrLarea').setAttribute('opacity', (Math.sin(eps) > 0.35 && tmag > 0.3) ? 1 : 0);
+
+    $('wrSv').textContent = s.toFixed(2);  $('wrThv').textContent = thd + '°';
+    $('wrOutR').textContent = s.toFixed(2); $('wrOutTh').textContent = thd + '°';
+    $('wrOutT').textContent = tmag.toFixed(2);
+  }
+
+  const VIEWS = { wrV1: [-32, 34], wrV2: [0, 90], wrV3: [-38, 4] };
+  Object.keys(VIEWS).forEach(id => $(id).addEventListener('click', () => {
+    phi = VIEWS[id][0] * Math.PI / 180; eps = VIEWS[id][1] * Math.PI / 180;
+    Object.keys(VIEWS).forEach(j => $(j).classList.toggle('active', j === id));
+    fit(); draw();
+  }));
+  let drag = null;
+  svg.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY, phi, eps]; svg.setPointerCapture(e.pointerId); svg.style.cursor = 'grabbing'; });
+  svg.addEventListener('pointermove', e => {
+    if (!drag) return;
+    // 表示サイズが小さい（スマートフォン）ときも同じ指の動きで同じだけ回るよう、表示幅で正規化
+    const k = VW / svg.getBoundingClientRect().width;
+    phi = drag[2] - (e.clientX - drag[0]) * 0.008 * k;
+    eps = Math.min(Math.PI / 2, Math.max(0.03, drag[3] + (e.clientY - drag[1]) * 0.008 * k));
+    Object.keys(VIEWS).forEach(j => $(j).classList.remove('active'));
+    fit(); draw();
+  });
+  const end = () => { drag = null; svg.style.cursor = 'grab'; };
+  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
+  $('wrS').addEventListener('input', draw); $('wrTh').addEventListener('input', draw);
+  fit(); draw();
+})();
+</script>
+</body>
+</html>

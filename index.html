@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biomechanics：動かして確かめる図</title>
+<meta name="description" content="バイオメカニクス・スポーツ科学に出てくる数理を、ブラウザで動かして確かめる図の一覧。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Biomechanics：動かして確かめる図">
+<meta property="og:description" content="バイオメカニクス・スポーツ科学に出てくる数理を、ブラウザで動かして確かめる図の一覧。">
+<meta property="og:url" content="https://skill-vis.github.io/biomechanics/">
+<meta property="og:image" content="https://skill-vis.github.io/biomechanics/torque_wrench/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #fff; color: #222; line-height: 1.6;
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", Meiryo, sans-serif; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 1.7rem; color: #1e4d7b; margin: 0 0 0.2em; }
+  .lead { color: #444; margin: 0 0 1.4em; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 18px; }
+  .card { display: block; border: 1px solid #dde3ea; border-radius: 8px; overflow: hidden;
+    text-decoration: none; color: inherit; background: #fff; transition: box-shadow .15s, transform .15s; }
+  .card:hover { box-shadow: 0 4px 16px rgba(30,77,123,.18); transform: translateY(-2px); }
+  .card img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; display: block; border-bottom: 1px solid #eee; }
+  .card .body { padding: 10px 14px 14px; }
+  .card h2 { font-size: 1.1rem; color: #1e4d7b; margin: 0 0 0.3em; }
+  .card p { margin: 0; font-size: 0.9rem; color: #555; }
+  footer { margin-top: 28px; font-size: 0.8rem; color: #888; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Biomechanics：動かして確かめる図</h1>
+  <p class="lead">バイオメカニクス・スポーツ科学に出てくる数理を、ブラウザの中で動かして確かめる図です。
+    図をドラッグしたり、スライダを動かしたりしてみてください。</p>
+
+  <div class="cards">
+    <a class="card" href="torque_wrench/">
+      <img src="torque_wrench/ogp.png" alt="レンチとトルク T = r × F の 3D 図">
+      <div class="body">
+        <h2>レンチで見るベクトル積：トルク T = r × F</h2>
+        <p>レンチでネジを回す「トルク」を、ベクトル積として 3D で確かめる。視点・持つ位置・力の向きを変えられます。</p>
+      </div>
+    </a>
+    <!-- 図を足すときは、この <a class="card"> を 1 つ複製して href・画像・文を書き換える -->
+  </div>
+
+  <footer>図はすべてブラウザ上で描いています（外部サービス・通信なし）。</footer>
+</div>
+</body>
+</html>
