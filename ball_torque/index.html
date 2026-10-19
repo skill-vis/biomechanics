@@ -3,304 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>指がボールを回す：トルク T = r × F（ストレートとカーブ）</title>
-<meta name="description" content="投球で指がボールに加える力から、ボールを回すトルク T = r × F を 3D で確かめる模式図。ストレートとカーブを切り替え、力の向きを変えられます。">
+<title>指がボールを回す：トルク τ = r × F</title>
+<meta name="description" content="指がボールに加える力 F と、その作用線から、ボールを回すトルク τ = r × F を 2 次元で確かめる図。">
 <!-- ===== リンクカード（X / Facebook）: og:image は https:// から始まる絶対 URL が必要 ===== -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="指がボールを回す：トルク T = r × F（ストレートとカーブ）">
-<meta property="og:description" content="指がボールに加える力から、ボールを回すトルクを 3D で確かめる模式図。ストレートとカーブを比べられます。">
+<meta property="og:title" content="指がボールを回す：トルク τ = r × F">
+<meta property="og:description" content="指がボールに加える力と作用線から、ボールを回すトルクを確かめる図。押す点を作用線に沿ってずらしてもトルクは同じ。">
 <meta property="og:url" content="https://skill-vis.github.io/biomechanics/ball_torque/">
 <meta property="og:image" content="https://skill-vis.github.io/biomechanics/ball_torque/ogp.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-
 <style>
   * { box-sizing: border-box; }
   body { margin: 0; background: #fff; color: #222; line-height: 1.6;
     font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "YuGothic", Meiryo, sans-serif; }
-  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px 16px 32px; }
-  h1 { font-size: 1.6rem; color: #1e4d7b; margin: 0.2em 0 0.3em; line-height: 1.35; }
-  .lead { margin: 0 0 0.8em; color: #333; }
-  .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-  @media (max-width: 860px) { .grid { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 1.3rem; } }
-
-  #bSvg { width: 100%; height: auto; display: block; cursor: grab; touch-action: none;
-          background: #fbfcfe; border: 1px solid #dde3ea; border-radius: 6px 6px 0 0; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 32px; }
+  h1 { font-size: 1.55rem; color: #1e4d7b; margin: 0.2em 0 0.6em; line-height: 1.35; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  @media (max-width: 820px) { .grid { grid-template-columns: minmax(0, 1fr); } h1 { font-size: 1.25rem; } }
+  #btSvg { border-radius: 6px 6px 0 0; }
   .controls { background: #e6ecf3; border: 2px solid #1e4d7b; border-top: none; border-radius: 0 0 6px 6px;
-              padding: 10px 14px; display: grid; gap: 8px; }
+              padding: 10px 14px; display: grid; gap: 8px; font-size: 0.95rem; }
   .row { display: flex; align-items: center; gap: 10px; }
-  .row label { white-space: nowrap; font-weight: bold; min-width: 9.5em; }
+  .row label { white-space: nowrap; font-weight: bold; min-width: 8.5em; }
   .row input[type=range] { flex: 1; min-width: 0; accent-color: #1e4d7b; height: 26px; }
-  @media (max-width: 520px) {
-    .row label { min-width: 0; white-space: normal; font-size: 0.9rem; line-height: 1.3; }
-    .btn { padding: 5px 9px; } .btn.big { padding: 6px 12px; }
-  }
-  .val { font-family: ui-monospace, Menlo, monospace; font-weight: bold; min-width: 3.4em; text-align: right; color: #1e4d7b; }
-  .btns { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .btn { padding: 5px 12px; border: 1px solid #1e4d7b; background: #fff; color: #1e4d7b;
-         font-size: 0.95rem; cursor: pointer; border-radius: 4px; }
-  .btn.active { background: #1e4d7b; color: #fff; }
-  .btn.big { font-size: 1.05rem; padding: 6px 16px; font-weight: bold; }
-  .hint { font-size: 0.85rem; color: #777; margin: 6px 2px 0; }
-
-  .box { border-left: 5px solid #1e4d7b; background: #e8f0fa; padding: 8px 14px; margin: 0 0 10px; }
-  .box.green { border-color: #1e8449; background: #f1f8ee; }
-  .box.gray { border-color: #999; background: #f5f5f5; }
-  .box p { margin: 0.2em 0; }
-  .r { color: #2471a3; } .f { color: #c0392b; } .t { color: #8e44ad; } .g { color: #1e8449; } .o { color: #e07b00; } .k { color: #c2185b; }
+  .val { font-family: ui-monospace, Menlo, monospace; font-weight: bold; min-width: 3.2em; text-align: right; color: #1e4d7b; }
+  .btn { padding: 6px 12px; border: 1px solid #1e4d7b; background: #fff; color: #1e4d7b; font-size: 0.95rem; cursor: pointer; border-radius: 4px; }
+  .btn:hover { background: #e8f0fa; }
+  .box { border-left: 5px solid #1e8449; background: #f1f8ee; padding: 10px 14px; margin: 0 0 12px; }
+  .box p { margin: 0.25em 0; }
   .v { font-family: "Times New Roman", serif; font-style: italic; font-weight: bold; }
-  .readout { font-family: ui-monospace, Menlo, monospace; font-size: 1.05rem; margin: 6px 0 10px; }
-  .readout b { font-size: 1.15em; }
-  .small { font-size: 0.88rem; color: #555; }
-  footer { margin-top: 18px; font-size: 0.8rem; color: #888; }
+  .r { color: #2448d8; } .f { color: #c0392b; } .t { color: #1e8449; } .o { color: #e07b00; }
+  .readout { font-family: ui-monospace, Menlo, monospace; font-size: 1.1rem; margin: 6px 0 12px; line-height: 1.6; }
+  .small { font-size: 0.85rem; color: #777; }
+  @media (max-width: 520px) { .row label { min-width: 0; white-space: normal; } }
 </style>
 </head>
 <body>
 <div class="wrap">
   <p style="margin:0; font-size:0.85rem;"><a href="../" style="color:#1e4d7b;">← Biomechanics の図の一覧</a></p>
-  <h1>指がボールを回す：トルク <span class="v t">T</span> = <span class="v r">r</span> × <span class="v f">F</span>（ストレートとカーブ）</h1>
-  <p class="lead">ボールを投げるとき、指はボールを押し出すだけでなく<b>回転</b>も与えています。
-    その「回す働き」は、レンチでネジを回すときと同じく<b>ベクトル積（外積）</b>で表せます。
-    球種を切り替え、指の力の向きを変えてみてください。</p>
-
+  <h1>指がボールを回す：トルク <span class="v t">τ</span> = <span class="v r">r</span> × <span class="v f">F</span></h1>
   <div class="grid">
     <div>
-      <svg id="bSvg" viewBox="0 0 660 600" role="img" aria-label="ボールと指の力、トルク、回転軸を示す 3D 図"
+      <svg id="btSvg" viewBox="0 0 600 520" width="100%" style="display:block; background:#fbfcfe; border:1px solid #dde3ea;" role="img" aria-label="ボール、指の力 F、作用線、トルクの平行四辺形の図"
            font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, sans-serif">
         <defs>
-          <radialGradient id="bShade" cx="0.38" cy="0.32" r="0.75">
-            <stop offset="0" stop-color="#ffffff"/><stop offset="0.65" stop-color="#f1efe9"/><stop offset="1" stop-color="#cfcbc0"/>
+          <marker id="btMb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2448d8"/></marker>
+          <marker id="btMr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c0392b"/></marker>
+          <marker id="btMg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#1e8449"/></marker>
+          <radialGradient id="btShade" cx="0.38" cy="0.32" r="0.75">
+            <stop offset="0" stop-color="#ffffff"/><stop offset="0.7" stop-color="#f1efe9"/><stop offset="1" stop-color="#d4d0c6"/>
           </radialGradient>
-          <marker id="bMb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#2471a3"/></marker>
-          <marker id="bMr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#c0392b"/></marker>
-          <marker id="bMp" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.6" markerHeight="3.6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#8e44ad"/></marker>
-          <marker id="bMo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#e07b00"/></marker>
-          <marker id="bMk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#9aa3ad"/></marker>
         </defs>
-        <!-- 投げる方向（捕手の方向）-->
-        <line id="bDir" stroke="#9aa3ad" stroke-width="5" stroke-dasharray="10 7" marker-end="url(#bMk)"/>
-        <text id="bDirL" font-size="17" fill="#7a838d">捕手の方向</text>
-        <!-- 回転軸（裏側の部分）とボールの裏の縫い目 -->
-        <line id="bAxB" stroke="#c2185b" stroke-width="2.5" stroke-dasharray="8 6" opacity="0.45"/>
-        <path id="bSeamB" fill="none" stroke="#d9534f" stroke-width="2" opacity="0.25"/>
-        <circle id="bBall" fill="url(#bShade)" stroke="#9c958a" stroke-width="1.5"/>
-        <path id="bSeamF" fill="none" stroke="#d9534f" stroke-width="3.5" stroke-dasharray="1 5" stroke-linecap="round"/>
-        <path id="bSeamF2" fill="none" stroke="#c0392b" stroke-width="1.6"/>
-        <!-- 回転軸（表側）、回転の矢印 -->
-        <line id="bAxF" stroke="#c2185b" stroke-width="2.5" stroke-dasharray="8 6"/>
-        <polyline id="bRot" fill="none" stroke="#e07b00" stroke-width="5" marker-end="url(#bMo)"/>
-        <!-- 力の分解（補助線）-->
-        <line id="bFn" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 4" opacity="0.6"/>
-        <line id="bFt" stroke="#c0392b" stroke-width="2" stroke-dasharray="5 4" opacity="0.6"/>
-        <polygon id="bPara" fill="#1e8449" fill-opacity="0.22" stroke="#1e8449" stroke-width="1.3" stroke-dasharray="6 4"/>
-        <line id="bR" stroke="#2471a3" stroke-width="6" marker-end="url(#bMb)"/>
-        <line id="bF" stroke="#c0392b" stroke-width="7" marker-end="url(#bMr)"/>
-        <line id="bT" stroke="#8e44ad" stroke-width="8" marker-end="url(#bMp)"/>
-        <circle id="bO" r="4.5" fill="#555"/>
-        <circle id="bP" r="9" fill="#f2c9a5" stroke="#8a5a3c" stroke-width="2"/>
-        <g font-size="24" font-weight="bold" stroke="#fff" stroke-width="5" paint-order="stroke">
-          <text id="bLr" fill="#2471a3" font-style="italic">r</text>
-          <text id="bLF" fill="#c0392b" font-style="italic">F</text>
-          <text id="bLT" fill="#8e44ad">T = r × F</text>
-          <text id="bLax" fill="#c2185b" font-size="17">回転軸</text>
-          <text id="bLP" fill="#8a5a3c" font-size="16">指</text>
+        <circle id="btBall" fill="url(#btShade)" stroke="#9c958a" stroke-width="2"/>
+        <path id="btSeam1" fill="none" stroke="#d9534f" stroke-width="2" stroke-dasharray="2 5" opacity="0.7"/>
+        <path id="btSeam2" fill="none" stroke="#d9534f" stroke-width="2" stroke-dasharray="2 5" opacity="0.7"/>
+        <!-- トルクの平行四辺形（r と F が張る。面積 = |τ| に比例）。ずらした点の分は破線 -->
+        <polygon id="btPara2" fill="#1e8449" fill-opacity="0.10" stroke="#1e8449" stroke-width="1.5" stroke-dasharray="6 4" opacity="0"/>
+        <polygon id="btPara" fill="#1e8449" fill-opacity="0.22" stroke="#1e8449" stroke-width="1.5"/>
+        <!-- 作用線 -->
+        <line id="btLine" stroke="#777" stroke-width="2" stroke-dasharray="9 6"/>
+        <text id="btLineL" font-size="18" fill="#666">作用線</text>
+        <!-- 中心から作用線までの距離 d（垂線） -->
+        <line id="btD" stroke="#e07b00" stroke-width="3"/>
+        <polyline id="btRA" fill="none" stroke="#e07b00" stroke-width="2"/>
+        <text id="btDL" font-size="20" fill="#e07b00" font-weight="bold" font-style="italic">d</text>
+        <!-- r, F, ずらした点 -->
+        <line id="btR" stroke="#2448d8" stroke-width="6" marker-end="url(#btMb)"/>
+        <line id="btR2" stroke="#2448d8" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#btMb)" opacity="0"/>
+        <line id="btF" stroke="#c0392b" stroke-width="7" marker-end="url(#btMr)"/>
+        <line id="btF2" stroke="#c0392b" stroke-width="4" stroke-dasharray="7 5" marker-end="url(#btMr)" opacity="0"/>
+        <!-- トルクの回転の矢印 -->
+        <path id="btTau" fill="none" stroke="#1e8449" stroke-width="6" marker-end="url(#btMg)"/>
+        <circle id="btO" r="7" fill="#8fd16f" stroke="#2c5e1a" stroke-width="2"/>
+        <circle id="btP" r="9" fill="#2448d8"/>
+        <circle id="btQ" r="7" fill="#fff" stroke="#2448d8" stroke-width="3" opacity="0"/>
+        <g font-size="26" font-weight="bold" font-style="italic" stroke="#fff" stroke-width="5" paint-order="stroke">
+          <text id="btLr" fill="#2448d8">r</text>
+          <text id="btLF" fill="#c0392b">F</text>
+          <text id="btLt" fill="#1e8449">τ</text>
         </g>
-        <text id="bTitle" x="18" y="34" font-size="22" font-weight="bold" fill="#1e4d7b">ストレート（バックスピン）</text>
+        <text id="btLP" font-size="16" fill="#2448d8" font-weight="bold">指が触れた点</text>
       </svg>
       <div class="controls">
-        <div class="btns"><span>球種：</span>
-          <button class="btn big active" id="bFast">ストレート</button>
-          <button class="btn big" id="bCurve">カーブ</button>
-          <button class="btn" id="bPlay" style="margin-left:auto;">⏸ 回転を止める</button></div>
-        <div class="row"><label class="f" for="bTh">力の向き θ（r と F）</label>
-          <input id="bTh" type="range" min="90" max="180" step="1" value="125"><span class="val" id="bThv">125°</span></div>
-        <div class="btns"><span>視点：</span>
-          <button class="btn active" id="bV2">斜めから</button>
-          <button class="btn" id="bV1">投手の後ろから</button>
-          <button class="btn" id="bV3">一塁側から</button>
-          <button class="btn" id="bV4">真上から</button></div>
+        <div class="row"><label class="r" for="btPhi">指が触れる位置</label>
+          <input id="btPhi" type="range" min="0" max="360" step="1" value="60"><span class="val" id="btPhiV">60°</span></div>
+        <div class="row"><label class="f" for="btAlp">力 F の向き</label>
+          <input id="btAlp" type="range" min="0" max="360" step="1" value="200"><span class="val" id="btAlpV">200°</span></div>
+        <div><button class="btn" id="btSlide" type="button">押す点を作用線に沿ってずらす</button></div>
       </div>
-      <p class="hint">図をドラッグ（スマートフォンは指でなぞる）すると、視点を自由に回せます。</p>
     </div>
-
     <div>
       <div class="box">
-        <p><span class="v r">r</span>：ボールの中心から<b>指が触れる点</b>までのベクトル</p>
-        <p><span class="v f">F</span>：指がボールに加える<b>力</b></p>
-        <p><span class="v t">T</span> = <span class="v r">r</span> × <span class="v f">F</span>：ボールを回す働き（<b>トルク</b>）</p>
-      </div>
-      <div class="box">
-        <p><b>① 向き</b>：ボールは <span class="v t">T</span> の向きを軸に、<b class="o">右ネジ</b>の向きに回り始める
-          （<b class="k">ピンクの破線</b>＝回転軸）。</p>
-        <p class="small">ストレートは軸がほぼ水平で<b>バックスピン</b>、カーブは軸が傾いて<b>トップスピン＋横回転</b>。
-          指が触れる場所と力の向きが違うだけで、回転の向きが変わる。</p>
-      </div>
-      <div class="box">
-        <p><b>② 大きさ</b>：|<span class="v t">T</span>| = |<span class="v r">r</span>||<span class="v f">F</span>| sin <i>θ</i>
-          ＝ <b class="g">緑の平行四辺形の面積</b></p>
-        <p class="small">点線は <span class="v f">F</span> を「中心に向かう向き」と「表面に沿う向き」に分けたもの。
-          回転を生むのは<b>表面に沿う成分</b>だけ。</p>
+        <p>トルクの大きさ ＝ 力の大きさ × 中心から作用線までの距離 <span class="v o">d</span></p>
+        <p>＝ <b class="t">緑の平行四辺形の面積</b></p>
       </div>
       <p class="readout">
-        θ = <b class="f" id="bOutTh">125°</b><br>
-        |T| = |r||F| sin θ = <b class="t" id="bOutT">0.82</b>
-        <span class="small">（|r| = |F| = 1 とした）</span>
+        d = <b class="o" id="btOutD">0.000</b> m<br>
+        τ = <b class="t" id="btOutT">0.00</b> N·m <span id="btOutDir" style="color:#555; font-size:0.9em;"></span>
       </p>
-      <div class="box green">
-        <p><b>スライダで確かめる</b>：θ = 180°（ボールの中心に向けてまっすぐ押す）では sin θ = 0 で、
-          ボールは押し出されるだけで<b>回らない</b>。指先で表面を「切る」ように力を加える（θ を 90° に近づける）ほど、強く回る。</p>
-      </div>
-      <div class="box gray">
-        <p class="small">※ 回転の仕組みを示すための<b>模式図</b>です。指の位置・力の向き・大きさは説明用に決めた値で、
-          実際の投球の計測値ではありません。回転の速さは |T| に比例させて表示しています。</p>
-      </div>
+      <p>押す点を作用線に沿ってずらしても、トルクは変わらない。</p>
+      <p class="small">ボールの半径 0.037 m、|F| = 50 N は説明用の値。</p>
     </div>
   </div>
-
-  <footer>図はすべてブラウザ上で描いています（外部サービス・通信なし）。</footer>
 </div>
-
 <script>
 // =====================================================================
-// 指がボールを回す：トルク T = r × F（模式図）
-//  世界座標: ボールの中心が原点、半径 1。y = 捕手の方向、z = 上、x = 投手の後ろから見て右（一塁側）。
-//  球種ごとに「トルクの向き t」と「指が触れる点 r（t に直交）」を決め、
-//  F = cosθ r̂ + sinθ (t × r̂) とすると、r × F = sinθ t（|r| = |F| = 1）。
-//  ボールは t を軸に、角速度 ∝ |T| で回して見せる（右ネジの向き）。
+// 野球のボール：力の作用線とトルク（2 次元。Desmos 非依存）
+//  ボールの中心を原点、半径 R = 0.037 m。指が触れる点 P = R(cos φ, sin φ)、力 F = |F|(cos α, sin α)、|F| = 50 N。
+//  τ = r × F の z 成分 = r_x F_y − r_y F_x（正 = 反時計回り）。作用線までの距離 d = |τ| / |F|。
+//  「ずらす」ボタン: 押す点を作用線上で P → P + sF と動かしても τ が変わらないことを見せる。
 // =====================================================================
 (function () {
-  const svg = document.getElementById('bSvg');
   const $ = id => document.getElementById(id);
-  const VW = 660, VH = 600;
-  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
-  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-  const norm = a => { const n = Math.hypot(...a); return mul(a, 1 / n); };
-  // 軸 k まわりに角 q 回す（ロドリゲスの回転公式）
-  const rot = (v, k, q) => add(add(mul(v, Math.cos(q)), mul(cross(k, v), Math.sin(q))), mul(k, dot(k, v) * (1 - Math.cos(q))));
-
-  const d2r = Math.PI / 180;
-  const b40 = 40 * d2r, g35 = 35 * d2r, a15 = 15 * d2r;
-  const PITCH = {
-    fast:  { name: 'ストレート（バックスピン）', t: [1, 0, 0],
-             r: [0, -Math.cos(a15), Math.sin(a15)] },                         // ボールの後ろ・少し上
-    curve: { name: 'カーブ（トップスピン＋横回転）', t: norm([-Math.cos(b40), 0, Math.sin(b40)]),
-             r: add(mul([Math.sin(b40), 0, Math.cos(b40)], Math.cos(g35)), mul([0, -1, 0], Math.sin(g35))) }  // 上・右・後ろ
-  };
-  let pitch = 'fast';
-
-  // 縫い目（テニスボール曲線）: a + b = 1、球面上に正規化
-  const SEAM = [];
-  { const a = 0.62, b = 0.38;
-    for (let i = 0; i <= 240; i++) { const t = i / 240 * 2 * Math.PI;
-      SEAM.push(norm([a * Math.cos(t) + b * Math.cos(3 * t), a * Math.sin(t) - b * Math.sin(3 * t), 2 * Math.sqrt(a * b) * Math.sin(2 * t)])); } }
-
-  let phi = -40 * d2r, eps = 24 * d2r;
-  let S = 150, OX = 330, OY = 300;
-  const proj = p => {
-    const xs = Math.cos(phi) * p[0] - Math.sin(phi) * p[1];
-    const h  = Math.sin(phi) * p[0] + Math.cos(phi) * p[1];
-    const ys = Math.cos(eps) * p[2] + Math.sin(eps) * h;
-    return [OX + S * xs, OY - S * ys];
-  };
-  const toViewer = () => [-Math.sin(phi) * Math.cos(eps), -Math.cos(phi) * Math.cos(eps), Math.sin(eps)];
-  const setL = (id, a, b) => { const e = $(id), A = proj(a), B = proj(b);
-    e.setAttribute('x1', A[0].toFixed(1)); e.setAttribute('y1', A[1].toFixed(1)); e.setAttribute('x2', B[0].toFixed(1)); e.setAttribute('y2', B[1].toFixed(1)); };
-  const setT = (id, p, dx, dy) => { const e = $(id), A = proj(p);
-    e.setAttribute('x', (A[0] + (dx || 0)).toFixed(1)); e.setAttribute('y', (A[1] + (dy || 0)).toFixed(1)); };
-  const pts = arr => arr.map(p => proj(p).map(v => v.toFixed(1)).join(',')).join(' ');
-  function fit() {   // 球（半径 1）と矢印が収まる縮尺（視点によらず一定）
-    S = 140; OX = VW / 2 + 10; OY = VH / 2 - 5;
-  }
-
-  let spin = 0, playing = true, last = null;
+  if (!$('btSvg')) return;
+  const CX = 300, CY = 270, S = 4000;            // 1 m = 4000 px（ボールの半径 148 px）
+  const R = 0.037, FMAG = 50, FD = 0.042;         // F の矢印の表示長さ [m 相当]
+  const X = x => CX + S * x, Y = y => CY - S * y;
+  const setL = (id, a, b) => { const e = $(id); e.setAttribute('x1', X(a[0])); e.setAttribute('y1', Y(a[1])); e.setAttribute('x2', X(b[0])); e.setAttribute('y2', Y(b[1])); };
+  const setT = (id, p, dx, dy) => { const e = $(id); e.setAttribute('x', X(p[0]) + (dx || 0)); e.setAttribute('y', Y(p[1]) + (dy || 0)); };
+  const setC = (id, p) => { $(id).setAttribute('cx', X(p[0])); $(id).setAttribute('cy', Y(p[1])); };
+  $('btBall').setAttribute('cx', CX); $('btBall').setAttribute('cy', CY); $('btBall').setAttribute('r', S * R);
+  // 縫い目（見た目だけ）
+  const seam = sgn => { let d = ''; for (let k = 0; k <= 40; k++) { const t = -1.2 + 2.4 * k / 40; const x = sgn * (0.62 * R + 0.25 * R * Math.cos(t * 1.3)), y = R * 0.92 * Math.sin(t); d += (k ? ' L ' : 'M ') + X(x) + ' ' + Y(y); } return d; };
+  $('btSeam1').setAttribute('d', seam(1)); $('btSeam2').setAttribute('d', seam(-1));
+  setC('btO', [0, 0]);
+  let slide = 0, anim = null;
   function draw() {
-    const P = PITCH[pitch], th = +$('bTh').value * d2r;
-    const r = P.r, t = P.t, g = cross(t, r);
-    const F = add(mul(r, Math.cos(th)), mul(g, Math.sin(th)));         // |F| = 1
-    const tm = Math.sin(th);                                            // |T|
-    const KF = 0.9, KT = 1.25;
-    const view = toViewer();
-
-    // 投げる方向
-    setL('bDir', [0, -0.9, -1.45], [0, 1.4, -1.45]); setT('bDirL', [0, 1.4, -1.45], 10, 6);
-    // ボール
-    const c = proj([0, 0, 0]);
-    $('bBall').setAttribute('cx', c[0]); $('bBall').setAttribute('cy', c[1]); $('bBall').setAttribute('r', S);
-    // 縫い目（回転させてから、手前と奥に分けて描く）
-    let dF = '', dB = '', penF = false, penB = false;
-    for (const p0 of SEAM) {
-      const p = rot(p0, t, spin), q = proj(p), front = dot(p, view) > 0;
-      const s = q[0].toFixed(1) + ' ' + q[1].toFixed(1);
-      if (front) { dF += (penF ? ' L ' : ' M ') + s; penF = true; penB = false; }
-      else       { dB += (penB ? ' L ' : ' M ') + s; penB = true; penF = false; }
-    }
-    $('bSeamF').setAttribute('d', dF); $('bSeamF2').setAttribute('d', dF); $('bSeamB').setAttribute('d', dB);
-    // 回転軸（球の中は奥側として薄く）
-    setL('bAxB', mul(t, -1.0), mul(t, 1.0));
-    const tipSide = dot(t, view) >= 0 ? 1 : -1;
-    setL('bAxF', mul(t, 1.0 * tipSide), mul(t, 1.6 * tipSide));
-    setT('bLax', mul(t, 1.62 * tipSide), 6, 18);
-    // 回転の矢印（t を軸にした円弧、右ネジの向き）
-    const e1 = norm(cross(t, Math.abs(t[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0])), e2 = cross(t, e1);
-    const arc = [];
-    for (let k = 0; k <= 36; k++) { const q = (k / 36) * 1.6 * Math.PI;
-      arc.push(add(mul(t, 1.32), add(mul(e1, 0.42 * Math.cos(q)), mul(e2, 0.42 * Math.sin(q))))); }
-    $('bRot').setAttribute('points', pts(arc));
-    $('bRot').setAttribute('opacity', tm > 0.03 ? 1 : 0);
-    // r, F, 分解、平行四辺形, T
-    const O = [0, 0, 0], Fend = add(r, mul(F, KF));
-    setL('bR', O, r);
-    setL('bF', r, Fend);
-    setL('bFn', r, add(r, mul(r, Math.cos(th) * KF)));
-    setL('bFt', r, add(r, mul(g, Math.sin(th) * KF)));
-    $('bPara').setAttribute('points', pts([O, r, Fend, mul(F, KF)]));
-    setL('bT', O, mul(t, KT * tm));
-    $('bT').setAttribute('opacity', tm > 0.03 ? 1 : 0);
-    const o = proj(O); $('bO').setAttribute('cx', o[0]); $('bO').setAttribute('cy', o[1]);
-    const pp = proj(r); $('bP').setAttribute('cx', pp[0]); $('bP').setAttribute('cy', pp[1]);
-    setT('bLr', mul(r, 0.55), -22, -6);
-    setT('bLF', Fend, 10, 14);
-    setT('bLT', mul(t, KT * tm), 12, -8);
-    $('bLT').setAttribute('opacity', tm > 0.03 ? 1 : 0);
-    setT('bLP', r, 12, -12);
-    $('bTitle').textContent = P.name;
-    const thd = Math.round(th / d2r);
-    $('bThv').textContent = thd + '°'; $('bOutTh').textContent = thd + '°';
-    $('bOutT').textContent = tm.toFixed(2);
+    const phi = +$('btPhi').value * Math.PI / 180, alp = +$('btAlp').value * Math.PI / 180;
+    const P = [R * Math.cos(phi), R * Math.sin(phi)], u = [Math.cos(alp), Math.sin(alp)];
+    const tau = FMAG * (P[0] * u[1] - P[1] * u[0]);           // N·m（z 成分）
+    const d = Math.abs(tau) / FMAG;
+    // 作用線（P を通り u の向き）
+    const L = 0.11; setL('btLine', [P[0] - L * u[0], P[1] - L * u[1]], [P[0] + L * u[0], P[1] + L * u[1]]);
+    setT('btLineL', [P[0] + 0.095 * u[0], P[1] + 0.095 * u[1]], 6, -6);
+    // 中心から作用線への垂線の足 H
+    const s0 = -(P[0] * u[0] + P[1] * u[1]);
+    const H = [P[0] + s0 * u[0], P[1] + s0 * u[1]];
+    setL('btD', [0, 0], H);
+    setT('btDL', [H[0] / 2, H[1] / 2], 8, -6);
+    const n = d > 1e-6 ? [H[0] / d, H[1] / d] : [0, 0], q = 0.006;
+    $('btRA').setAttribute('points', [[H[0] - q * n[0], H[1] - q * n[1]], [H[0] - q * n[0] + q * u[0], H[1] - q * n[1] + q * u[1]], [H[0] + q * u[0], H[1] + q * u[1]]].map(p => X(p[0]) + ',' + Y(p[1])).join(' '));
+    $('btRA').setAttribute('opacity', d > 0.004 ? 1 : 0);
+    // r と F
+    setL('btR', [0, 0], P); setC('btP', P);
+    const Fv = [FD * u[0], FD * u[1]];
+    const poly = (A) => [[0, 0], A, [A[0] + Fv[0], A[1] + Fv[1]], Fv].map(p => X(p[0]) + ',' + Y(p[1])).join(' ');
+    $('btPara').setAttribute('points', poly(P));
+    setL('btF', P, [P[0] + FD * u[0], P[1] + FD * u[1]]);
+    setT('btLr', [P[0] / 2, P[1] / 2], -22, -8);
+    setT('btLF', [P[0] + FD * u[0], P[1] + FD * u[1]], 10, 10);
+    setT('btLP', P, 14, -14);
+    // ずらした点 Q = P + s u（作用線上）
+    // 作用線がボールともう一度交わる点（反対側の交点）まで、力の向きに進める
+    const sQ = slide * 2 * s0, Q = [P[0] + sQ * u[0], P[1] + sQ * u[1]];
+    ['btR2', 'btF2', 'btQ', 'btPara2'].forEach(id => $(id).setAttribute('opacity', slide > 0.02 ? 1 : 0));
+    $('btPara2').setAttribute('points', poly(Q));
+    setL('btR2', [0, 0], Q); setC('btQ', Q); setL('btF2', Q, [Q[0] + FD * u[0], Q[1] + FD * u[1]]);
+    // τ の回転の矢印（大きさに比例した弧、向きは τ の符号）
+    const rr = 0.024, span = Math.min(1, Math.abs(tau) / (FMAG * R)) * 1.6 * Math.PI, sg = tau >= 0 ? 1 : -1;
+    let dd = '';
+    for (let k = 0; k <= 40; k++) { const a = Math.PI / 2 + sg * span * k / 40 - sg * span / 2; dd += (k ? ' L ' : 'M ') + X(rr * Math.cos(a)) + ' ' + Y(rr * Math.sin(a)); }
+    $('btTau').setAttribute('d', span > 0.05 ? dd : '');
+    setT('btLt', [0, rr], -8, -14);
+    $('btPhiV').textContent = $('btPhi').value + '°'; $('btAlpV').textContent = $('btAlp').value + '°';
+    $('btOutD').textContent = d.toFixed(3);
+    $('btOutT').textContent = Math.abs(tau).toFixed(2);
+    $('btOutDir').textContent = Math.abs(tau) < 0.005 ? '（回らない：作用線が中心を通る）' : (tau > 0 ? '（反時計回り）' : '（時計回り）');
   }
-  function frame(ts) {
-    if (last === null) last = ts;
-    const dt = Math.min(ts - last, 50) / 1000; last = ts;
-    if (playing) spin += dt * 2 * Math.PI * 0.6 * Math.sin(+$('bTh').value * d2r);   // |T| に比例
-    draw();
-    requestAnimationFrame(frame);
-  }
-
-  const pick = (id, k) => $(id).addEventListener('click', () => {
-    pitch = k; spin = 0; $('bFast').classList.toggle('active', k === 'fast'); $('bCurve').classList.toggle('active', k === 'curve'); draw(); });
-  pick('bFast', 'fast'); pick('bCurve', 'curve');
-  $('bPlay').addEventListener('click', () => { playing = !playing; $('bPlay').textContent = playing ? '⏸ 回転を止める' : '▶ 回転させる'; });
-  const VIEWS = { bV1: [0, 14], bV2: [-40, 24], bV3: [-90, 6], bV4: [0, 90] };
-  Object.keys(VIEWS).forEach(id => $(id).addEventListener('click', () => {
-    phi = VIEWS[id][0] * d2r; eps = VIEWS[id][1] * d2r;
-    Object.keys(VIEWS).forEach(j => $(j).classList.toggle('active', j === id)); draw();
-  }));
-  let drag = null;
-  svg.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY, phi, eps]; svg.setPointerCapture(e.pointerId); svg.style.cursor = 'grabbing'; });
-  svg.addEventListener('pointermove', e => {
-    if (!drag) return;
-    const k = VW / svg.getBoundingClientRect().width;
-    phi = drag[2] - (e.clientX - drag[0]) * 0.008 * k;
-    eps = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, drag[3] + (e.clientY - drag[1]) * 0.008 * k));
-    Object.keys(VIEWS).forEach(j => $(j).classList.remove('active'));
+  $('btPhi').addEventListener('input', () => { slide = 0; draw(); });
+  $('btAlp').addEventListener('input', () => { slide = 0; draw(); });
+  $('btSlide').addEventListener('click', () => {
+    if (anim) cancelAnimationFrame(anim);
+    const t0 = performance.now(), DUR = 2400;
+    const step = now => { const u = Math.min(1, (now - t0) / DUR); slide = 0.5 - 0.5 * Math.cos(Math.PI * u); draw();
+      anim = u < 1 ? requestAnimationFrame(step) : null; };
+    anim = requestAnimationFrame(step);
   });
-  const end = () => { drag = null; svg.style.cursor = 'grab'; };
-  svg.addEventListener('pointerup', end); svg.addEventListener('pointercancel', end);
-  $('bTh').addEventListener('input', draw);
-  fit(); draw(); requestAnimationFrame(frame);
+  window._btDraw = (s) => { slide = s; draw(); };
+  draw();
 })();
 </script>
 </body>
